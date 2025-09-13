@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  username    String   @unique
+  email       String?
+  emailMasked String?
+  ip          String?
+  lastActive  DateTime?
+  language    String   @default("bn")
+  banned      Boolean  @default(false)
+  banReason   String?
+  tracks      Track[]
+  orders      Order[]
+}
+
+model Track {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  event     String
+  meta      Json?
+  ip        String?
+}
+
+model Service {
+  id         String   @id @default(cuid())
+  platform   String
+  key        String
+  titleBn    String
+  titleEn    String
+  requires   Json
+  minQty     Int?
+  maxQty     Int?
+  pricePerK  Int?
+  fixedPrice Int?
+  active     Boolean  @default(true)
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id])
+  username    String
+  ip          String?
+  language    String      @default("bn")
+  serviceKey  String
+  details     Json
+  status      OrderStatus @default(PENDING)
+  note        String?
+  unreadAdmin Boolean     @default(true)
+  approvedAt  DateTime?
+  payDeadline DateTime?
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  HOLD
+  CANCELED
+}
