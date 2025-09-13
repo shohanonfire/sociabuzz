@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>TikTok Services — Social Buzz</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div id="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+  <header class="header">
+    <div class="nav">
+      <div class="brand"><a href="/" class="btn" aria-label="back">←</a><img src="/img/logo.svg" alt="logo"><div class="name">TikTok Services</div></div>
+      <div class="actions">
+        <button id="langBtn" class="btn">EN</button>
+        <a href="/orders.html" class="btn">My Orders</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="section"><div class="panel">
+    <h2>TikTok Services</h2>
+    <div class="grid cols-2">
+      <div>
+        <details class="card" open>
+          <summary>FAQ</summary>
+          <div class="form" style="margin-top:8px">
+            <details><summary>Service risks?</summary><p class="muted">Services are delivered gradually. No password needed. Use real links.</p></details>
+            <details><summary>Delivery time?</summary><p class="muted">Depends on queue and quantity. Typical start within 0–24h.</p></details>
+            <details><summary>Will it drop?</summary><p class="muted">Minor fluctuations are possible; refill policy depends on service.</p></details>
+          </div>
+        </details>
+      </div>
+      <div>
+        <div class="card">
+          <div id="serviceOptions" class="checkbox-grid"></div>
+          <div class="form" style="margin-top:10px">
+            <div id="field_link" class="input" style="display:none"><label>Link</label><input id="inp_link" placeholder="https://..."/></div>
+            <div id="field_username" class="input" style="display:none"><label>Username</label><input id="inp_username" placeholder="@handle"/></div>
+            <div id="field_dob" class="input" style="display:none"><label>Date of Birth</label><input id="inp_dob" type="date"/></div>
+            <div id="field_months" class="input" style="display:none"><label>Months</label><input id="inp_months" type="number" min="1" max="12"/></div>
+            <div id="field_quantity" class="input" style="display:none"><label>Quantity</label><input id="inp_quantity" type="number" min="1"/></div>
+            <div class="input"><label>WhatsApp (optional)</label><input id="inp_wa" placeholder="01XXXXXXXXX"/></div>
+            <button id="submitBtn" class="btn primary" style="margin-top:6px">Confirm Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+
+  <a class="wa-bubble" href="https://wa.link/k5cz1f" target="_blank" rel="noopener"><img src="/img/brandmarks/wa.svg" alt="wa"></a>
+
+  <script type="module">
+    import { renderHeader, bindHamburger, showLoader, bindLogout } from "/js/ui.js";
+    import { bootstrapUser, loadServices, renderServiceOptions, bindDynamicFields, submitOrder } from "/js/services.js";
+    import { track } from "/js/track.js";
+
+    window.addEventListener('pageshow', ()=> showLoader(1000));
+    renderHeader();
+    bindHamburger();
+    bindLogout();
+    const platform = 'tiktok';
+    track('open_services_tiktok', {});
+
+    const services = await loadServices(platform);
+    renderServiceOptions(services);
+    bindDynamicFields(services);
+
+    document.getElementById('submitBtn').addEventListener('click', ()=> submitOrder(platform));
+    bootstrapUser();
+  </script>
+</body></html>
