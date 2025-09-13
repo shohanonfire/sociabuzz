@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin — Social Buzz</title>
+  <link rel="icon" href="/favicon.ico"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    .tabbar{max-width:1100px;margin:12px auto 0;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap}
+    .tab{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);cursor:pointer;
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02))}
+    .tab.active{border-color:rgba(77,210,255,.35);box-shadow:0 6px 18px rgba(0,0,0,.22)}
+    .badge-dot{display:inline-block;min-width:18px;padding:1px 6px;border-radius:999px;background:#ff4d6d}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top}
+    .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 8px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:12px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .muted{color:var(--muted)}
+    .code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:12px}
+    .inline-input{width:120px;background:#0a111b;border:1px solid rgba(255,255,255,.08);color:var(--ink);padding:6px;border-radius:8px}
+    details>summary{cursor:pointer}
+  </style>
+</head>
+<body>
+  <div id="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+  <header class="header">
+    <div class="nav">
+      <div class="brand">
+        <a href="/" class="btn" aria-label="back">←</a>
+        <img src="/img/logo.svg" alt="logo">
+        <div class="name">Admin — Social Buzz</div>
+      </div>
+      <div class="actions">
+        <span class="pill">Unread <span id="unreadBadge" class="badge-dot" style="margin-left:6px">0</span></span>
+        <button id="refreshBtn" class="btn">Refresh</button>
+        <button id="logoutAdmin" class="btn danger">Admin Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabbar">
+    <button class="tab active" data-tab="orders">Orders</button>
+    <button class="tab" data-tab="users">Users</button>
+    <button class="tab" data-tab="services">Services</button>
+    <button class="tab" data-tab="tracks">Tracks</button>
+  </div>
+
+  <main class="section">
+    <section id="tab-orders" class="panel">
+      <h2>Orders</h2>
+      <p class="muted">Moderate orders. Approve → starts 2-minute Pay window for the client.</p>
+      <div id="ordersWrap" style="overflow:auto">
+        <table class="table" id="ordersTable">
+          <thead>
+            <tr>
+              <th>ID / Time</th>
+              <th>User / IP / Lang</th>
+              <th>Service / Details</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-users" class="panel" style="display:none">
+      <h2>Users</h2>
+      <p class="muted">Ban/unban users. See last activity & masked email.</p>
+      <div id="usersWrap" style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email (masked)</th>
+              <th>IP</th>
+              <th>Last Active</th>
+              <th>Lang</th>
+              <th>Banned</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-services" class="panel" style="display:none">
+      <h2>Services</h2>
+      <p class="muted">Create / edit services, set min/max and pricing.</p>
+
+      <details class="card">
+        <summary><strong>Add New Service</strong></summary>
+        <div class="grid-2" style="margin-top:10px">
+          <div class="form">
+            <div class="input"><label>Platform</label><input id="svc_platform" placeholder="youtube/facebook/tiktok/instagram" class="inline-input"/></div>
+            <div class="input"><label>Key</label><input id="svc_key" placeholder="yt_subscribers" class="inline-input"/></div>
+            <div class="input"><label>Title (BN)</label><input id="svc_titleBn" placeholder="YouTube Subscribers" class="inline-input" style="width:100%"/></div>
+            <div class="input"><label>Title (EN)</label><input id="svc_titleEn" placeholder="YouTube Subscribers" class="inline-input" style="width:100%"/></div>
+          </div>
+          <div class="form">
+            <div class="input"><label>Requires (JSON)</label>
+              <textarea id="svc_requires" rows="4" class="inline-input" style="width:100%">{ "link": true, "username": false, "dob": false, "months": false, "quantity": true }</textarea>
+            </div>
+            <div class="input"><label>minQty / maxQty</label>
+              <input id="svc_min" type="number" class="inline-input" placeholder="e.g. 100"/>
+              <input id="svc_max" type="number" class="inline-input" placeholder="e.g. 100000"/>
+            </div>
+            <div class="input"><label>pricePerK / fixedPrice</label>
+              <input id="svc_ppk" type="number" class="inline-input" placeholder="e.g. 120"/>
+              <input id="svc_fixed" type="number" class="inline-input" placeholder="e.g. 2999"/>
+            </div>
+            <div class="input"><label>Active</label>
+              <select id="svc_active" class="inline-input"><option value="true">true</option><option value="false">false</option></select>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px"><button id="svc_create" class="btn primary">Create Service</button></div>
+      </details>
+
+      <div style="margin-top:16px;overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Platform</th><th>Key</th><th>Title (BN/EN)</th><th>Min/Max</th><th>PriceK/Fixed</th><th>Active</th><th>Edit</th><th>Delete</th>
+            </tr>
+          </thead>
+          <tbody id="servicesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-tracks" class="panel" style="display:none">
+      <h2>Latest Tracks</h2>
+      <p class="muted">Recent client events (max 500).</p>
+      <div style="overflow:auto">
+        <table class="table">
+          <thead><tr><th>Time</th><th>User</th><th>IP</th><th>Event</th><th>Meta</th></tr></thead>
+          <tbody id="tracksBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { SERVER_BASE_URL } from "/js/config.js";
+    import { showLoader } from "/js/ui.js";
+
+    const token = () => localStorage.getItem("sb_admin_token") || "";
+    const authHeader = () => ({ "Authorization": "Bearer " + token() });
+    const jfetch = async (url, opts={})=>{
+      const res = await fetch(url, {
+        headers: { "Content-Type":"application/json", ...authHeader(), ...(opts.headers||{}) },
+        ...opts
+      });
+      if (res.status === 401) { alert("Unauthorized. Please login again."); location.href="/admin-login.html"; return { ok:false }; }
+      return res.json().catch(()=>({ ok:false }));
+    };
+    const fmt = (s)=> s ? new Date(s).toLocaleString() : "-";
+
+    const tabs = document.querySelectorAll(".tab");
+    function activateTab(name){
+      tabs.forEach(t => t.classList.toggle("active", t.dataset.tab===name));
+      document.querySelectorAll("main > section").forEach(sec=> sec.style.display = sec.id === "tab-"+name ? "" : "none");
+    }
+    tabs.forEach(t => t.addEventListener("click", ()=> activateTab(t.dataset.tab)));
+
+    async function loadUnread(){
+      const j = await jfetch(`${SERVER_BASE_URL}/api/admin/stats/unread`);
+      if (j?.ok) document.getElementById("unreadBadge").textContent = j.unread;
+    }
+
+    async function loadOrders(){
+      const { ok, items=[] } = await jfetch(`${SERVER_BASE_URL}/api/admin/orders`);
+      if (!ok) return;
+      const tbody = document.getElementById("ordersBody");
+      tbody.innerHTML = "";
+      items.forEach(o=>{
+        const tr = document.createElement("tr");
+        const detailsStr = `<div class="code">${JSON.stringify(o.details)}</div>`;
+        const payTill = o.payDeadline ? ` (pay till: ${fmt(o.payDeadline)})` : "";
+        tr.innerHTML = `
+          <td><div class="code">${o.id}</div><div class="muted">${fmt(o.createdAt)}</div></td>
+          <td>
+            <div><strong>${o.username}</strong></div>
+            <div class="muted">${o.ip || "-"}</div>
+            <div class="muted">Lang: ${o.language}</div>
+          </td>
+          <td>
+            <div><strong>${o.serviceKey}</strong></div>
+            ${detailsStr}
+            ${o.details?.whatsapp ? `<button class="btn" data-copy-wa="${o.details.whatsapp}">Copy WhatsApp</button>` : ""}
+          </td>
+          <td><span class="pill">${o.status}</span>${payTill}</td>
+          <td>
+            <div class="row-actions">
+              <select class="inline-input fast-reply">
+                <option value="">Fast reply…</option>
+                <option value="Thanks! Starting soon.">Thanks! Starting soon.</option>
+                <option value="Your order is under review.">Your order is under review.</option>
+                <option value="Please share a valid link.">Please share a valid link.</option>
+              </select>
+              <input class="inline-input note" placeholder="Note (optional)"/>
+              <button class="btn primary act" data-act="CONFIRMED" data-id="${o.id}">Approve</button>
+              <button class="btn act" data-act="HOLD" data-id="${o.id}">Hold</button>
+              <button class="btn danger act" data-act="CANCELED" data-id="${o.id}">Cancel</button>
+              <button class="btn danger del" data-id="${o.id}">Delete</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll("[data-copy-wa]").forEach(b=>{
+        b.addEventListener("click", ()=> {
+          navigator.clipboard.writeText(b.dataset.copyWa || "");
+          b.textContent = "Copied";
+          setTimeout(()=> b.textContent="Copy WhatsApp", 1000);
+        });
+      });
+      tbody.querySelectorAll(".act").forEach(b=>{
+        b.addEventListener("click", async ()=>{
+          const id = b.dataset.id, status = b.dataset.act;
+          const row = b.closest("tr");
+          const note = row.querySelector(".note")?.value || row.querySelector(".fast-reply")?.value || "";
+          const j = await jfetch(`${SERVER_BASE_URL}/api/admin/orders/${id}/status`, {
+            method: "POST", body: JSON.stringify({ status, note })
+          });
+          if (!j?.ok) return alert("Failed to update.");
+          await loadOrders(); await loadUnread();
+        });
+      });
+      tbody.querySelectorAll(".del").forEach(b=>{
+        b.addEventListener("click", async ()=>{
+          if(!confirm("Delete this order permanently?")) return;
+          const id = b.dataset.id;
+          const j = await jfetch(`${SERVER_BASE_URL}/api/admin/orders/${id}`, { method: "DELETE" });
+          if (!j?.ok) return alert("Delete failed");
+          await loadOrders(); await loadUnread();
+        });
+      });
+    }
+
+    async function loadUsers(){
+      const { ok, users=[] } = await jfetch(`${SERVER_BASE_URL}/api/admin/users`);
+      if (!ok) return;
+      const tbody = document.getElementById("usersBody");
+      tbody.innerHTML = "";
+      users.forEach(u=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${u.username}</strong></td>
+          <td>${u.emailMasked || "-"}</td>
+          <td class="muted">${u.ip || "-"}</td>
+          <td class="muted">${fmt(u.lastActive)}</td>
+          <td>${u.language}</td>
+          <td>${u.banned ? "Yes" : "No"}</td>
+          <td>
+            <div class="row-actions">
+              ${u.banned ? `<button class="btn" data-unban="${u.username}">Unban</button>`
+                         : `<button class="btn danger" data-ban="${u.username}">Ban</button>`}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll("[data-ban]").forEach(b=>{
+        b.addEventListener("click", async ()=>{
+          const reason = prompt("Ban reason (optional):") || "";
+          const j = await jfetch(`${SERVER_BASE_URL}/api/admin/users/${b.dataset.ban}/ban`, {
+            method:"POST", body: JSON.stringify({ reason })
+          });
+          if (!j?.ok) return alert("Failed to ban");
+          loadUsers();
+        });
+      });
+      tbody.querySelectorAll("[data-unban]").forEach(b=>{
+        b.addEventListener("click", async ()=>{
+          const j = await jfetch(`${SERVER_BASE_URL}/api/admin/users/${b.dataset.unban}/unban`, { method:"POST" });
+          if (!j?.ok) return alert("Failed to unban");
+          loadUsers();
+        });
+      });
+    }
+
+    async function loadServices(){
+      const { ok, items=[] } = await jfetch(`${SERVER_BASE_URL}/api/admin/services`);
+      if (!ok) return;
+      const tbody = document.getElementById("servicesBody");
+      tbody.innerHTML = "";
+      items.forEach(s=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${s.platform}</td>
+          <td class="code">${s.key}</td>
+          <td><div>${s.titleBn}</div><div class="muted">${s.titleEn}</div></td>
+          <td>${s.minQty ?? "-"} / ${s.maxQty ?? "-"}</td>
+          <td>${s.pricePerK ?? "-"} / ${s.fixedPrice ?? "-"}</td>
+          <td>${s.active ? "true" : "false"}</td>
+          <td><button class="btn edit" data-id="${s.id}">Edit</button></td>
+          <td><button class="btn danger remove" data-id="${s.id}">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll(".edit").forEach(b=>{
+        b.addEventListener("click", async ()=>{
+          const id = b.dataset.id;
+          const titleBn = prompt("Title (BN):");
+          const titleEn = prompt("Title (EN):");
+          const minQty = prompt("minQty (number or blank):");
+          const maxQty = prompt("maxQty (number or blank):");
+          const pricePerK = prompt("pricePerK (number or blank):");
+          const fixedPrice = prompt("fixedPrice (number or blank):");
+          const active = prompt("active (true/false):","true");
+          const payload = {
+            ...(titleBn ? { titleBn } : {}),
+            ...(titleEn ? { titleEn } : {}),
+            ...(minQty ? { minQty: Number(minQty) } : {}),
+            ...(maxQty ? { maxQty: Number(maxQty) } : {}),
+            ...(pricePerK ? { pricePerK: Number(pricePerK) } : {}),
+            ...(fixedPrice ? { fixedPrice: Number(fixedPrice) } : {}),
+            ...(active ? { active: active === "true" } : {})
+          };
+          const j = await jfetch(`${SERVER_BASE_URL}/api/admin/services/${id}`, { method:"PUT", body: JSON.stringify(payload) });
+          if (!j?.ok) return alert("Update failed");
+          loadServices();
+        });
+      });
+      tbody.querySelectorAll(".remove").forEach(b=>{
+        b.addEventListener("click", async ()=>{
+          if(!confirm("Delete this service?")) return;
+          const id = b.dataset.id;
+          const j = await jfetch(`${SERVER_BASE_URL}/api/admin/services/${id}`, { method:"DELETE" });
+          if (!j?.ok) return alert("Delete failed");
+          loadServices();
+        });
+      });
+    }
+    document.getElementById("svc_create").addEventListener("click", async ()=>{
+      try{
+        const requires = JSON.parse(document.getElementById("svc_requires").value || "{}");
+        const payload = {
+          platform: document.getElementById("svc_platform").value.trim(),
+          key: document.getElementById("svc_key").value.trim(),
+          titleBn: document.getElementById("svc_titleBn").value.trim(),
+          titleEn: document.getElementById("svc_titleEn").value.trim(),
+          requires,
+          minQty: Number(document.getElementById("svc_min").value) || null,
+          maxQty: Number(document.getElementById("svc_max").value) || null,
+          pricePerK: Number(document.getElementById("svc_ppk").value) || null,
+          fixedPrice: Number(document.getElementById("svc_fixed").value) || null,
+          active: document.getElementById("svc_active").value === "true"
+        };
+        const j = await jfetch(`${SERVER_BASE_URL}/api/admin/services`, { method:"POST", body: JSON.stringify(payload) });
+        if (!j?.ok) return alert("Create failed");
+        alert("Service created"); loadServices();
+      }catch(e){ alert("Invalid JSON in Requires"); }
+    });
+
+    async function loadTracks(){
+      const { ok, items=[] } = await jfetch(`${SERVER_BASE_URL}/api/admin/tracks`);
+      if (!ok) return;
+      const tbody = document.getElementById("tracksBody");
+      tbody.innerHTML = "";
+      items.forEach(t=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="muted">${fmt(t.createdAt)}</td>
+          <td>${t.userId ? t.userId : "-"}</td>
+          <td class="muted">${t.ip || "-"}</td>
+          <td>${t.event}</td>
+          <td class="code">${t.meta ? JSON.stringify(t.meta) : "-"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function refreshAll(){
+      await Promise.all([loadUnread(), loadOrders(), loadUsers(), loadServices(), loadTracks()]);
+    }
+    document.getElementById("refreshBtn").addEventListener("click", refreshAll);
+    setInterval(refreshAll, 2000);
+
+    document.getElementById("logoutAdmin").addEventListener("click", ()=>{
+      localStorage.removeItem("sb_admin_token");
+      alert("Admin logged out.");
+      location.href="/admin-login.html";
+    });
+
+    window.addEventListener('pageshow', ()=> showLoader(1000));
+    if (!token()) { location.href = "/admin-login.html"; }
+    activateTab("orders");
+    refreshAll();
+  </script>
+</body>
+</html>
