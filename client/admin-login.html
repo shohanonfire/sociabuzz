@@ -4,14 +4,14 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Admin Login — Social Buzz</title>
-  <link rel="icon" href="/client/favicon.ico"/>
-  <link rel="stylesheet" href="/client/css/style.css"/>
+  <link rel="icon" href="/favicon.ico"/>
+  <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
   <div id="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
   <header class="header">
     <div class="nav">
-      <div class="brand"><a href="/" class="btn" aria-label="back">←</a><img src="/client/img/logo.svg" alt="logo"><div class="name">Social Buzz</div></div>
+      <div class="brand"><a href="/" class="btn" aria-label="back">←</a><img src="/img/logo.svg" alt="logo"><div class="name">Social Buzz</div></div>
     </div>
   </header>
   <main class="section">
@@ -26,8 +26,8 @@
     </div>
   </main>
   <script type="module">
-    import { SERVER_BASE_URL } from "/client/js/config.js";
-    import { showLoader } from "/client/js/ui.js";
+    import { SERVER_BASE_URL } from "/js/config.js";
+    import { showLoader } from "/js/ui.js";
     window.addEventListener('pageshow', ()=> showLoader(1000));
     document.getElementById('adminLoginBtn').addEventListener('click', async ()=>{
       const password = (document.getElementById('adminPass')).value;
