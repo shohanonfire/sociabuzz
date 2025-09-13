@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Social Buzz</title>
+  <link rel="icon" href="/favicon.ico"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div id="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+  <header class="header">
+    <div class="nav">
+      <div class="brand"><button id="hamOpen" class="btn" aria-label="menu">☰</button><img src="/img/logo.svg" alt="logo"><div class="name">Social Buzz</div></div>
+      <div class="actions">
+        <button id="langBtn" class="btn">EN</button>
+        <a href="/login.html" class="btn"><span>Login</span></a>
+        <a href="/signup.html" class="btn primary"><span>Sign Up</span></a>
+      </div>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="panel">
+      <div class="grid cols-4">
+        <div class="card"><h3>YouTube</h3><p>Subscribers, Views, Likes, Comments, Watchtime, Premium</p><a href="/services/youtube.html">Open →</a></div>
+        <div class="card"><h3>Facebook</h3><p>Followers, Likes, Comments, Views, Shares, Blue Badge</p><a href="/services/facebook.html">Open →</a></div>
+        <div class="card"><h3>TikTok</h3><p>Followers, Views, Likes, Comments</p><a href="/services/tiktok.html">Open →</a></div>
+        <div class="card"><h3>Instagram</h3><p>Followers, Likes, Reels Views, Blue Badge</p><a href="/services/instagram.html">Open →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section"><div class="panel">
+    <div class="grid cols-2">
+      <a class="card" href="/orders.html"><h3>My Orders</h3><p>Track your orders in real-time</p></a>
+      <div class="card"><h3>Account</h3><p id="accountLabel">Not Assigned Yet</p></div>
+    </div>
+  </div></div>
+
+  <footer class="footer">
+    <div class="grid cols-2">
+      <a class="card" href="/terms.html">Terms of Service</a>
+      <a class="card" href="/privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <a class="wa-bubble" href="https://wa.link/k5cz1f" target="_blank" rel="noopener"><img src="/img/brandmarks/wa.svg" alt="wa"></a>
+
+  <div id="hamburger" class="hamburger">
+    <div class="backdrop" id="hamClose"></div>
+    <div class="panel">
+      <div class="ham-head"><img src="/img/logo.svg" width="24"><div class="site">Social Buzz</div></div>
+      <div class="ham-meta">
+        <div><strong>Account</strong>: <span id="accountLabel">Not Assigned Yet</span></div>
+        <div><strong>Username</strong>: <span id="hamUsername"></span></div>
+      </div>
+      <div class="ham-links">
+        <a href="/orders.html">My Orders</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="https://wa.link/k5cz1f" target="_blank">Contact Support</a>
+      </div>
+      <div class="ham-bottom">
+        <button class="btn danger" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { renderHeader, bindHamburger, showLoader, bindLogout } from "/js/ui.js";
+    import { getOrCreateUsername, bootstrapUser } from "/js/services.js";
+    import { track } from "/js/track.js";
+
+    window.addEventListener('pageshow', () => { showLoader(1000); });
+    bindHamburger();
+    renderHeader();
+    bindLogout();
+    document.getElementById('hamUsername').textContent = getOrCreateUsername();
+    bootstrapUser();
+    track('visit_home', {} , getOrCreateUsername());
+  </script>
+</body>
+</html>
