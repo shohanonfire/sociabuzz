@@ -2,11 +2,11 @@
   "name": "social-buzz-server",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs",                       // ← ESM নয়, CJS
+  "type": "commonjs",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc && prisma generate",
-    "start": "node dist/index.js",          // ← --env-file ছাড়াই; dotenv কোডে আছে
+    "start": "node dist/index.js",
     "prisma": "prisma"
   },
   "dependencies": {
