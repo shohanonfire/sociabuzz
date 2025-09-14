@@ -79,7 +79,7 @@ pub.post("/orders", async (req, res) => {
     serviceKey: body.serviceKey, details: body.details, status: "PENDING", unreadAdmin: true
   }});
 
-  await sendTelegram(`*New order*\nUser: ${body.username}\nService: ${body.serviceKey}\nLang: ${body.language}\nDetails: \`${JSON.stringify(body.details)}\``);
+  await sendToTelegram(`*New order*\nUser: ${body.username}\nService: ${body.serviceKey}\nLang: ${body.language}\nDetails: \`${JSON.stringify(body.details)}\``);
   res.json({ ok: true, order: ord });
 });
 
