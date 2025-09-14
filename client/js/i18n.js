@@ -1,4 +1,4 @@
-import { DEFAULT_LANG } from "./config.js";
+import { DEFAULT_LANG } from "/js/config.js";
 
 const strings = {
   bn: {
