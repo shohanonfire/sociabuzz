@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
-import { sendTelegram } from "../tg";
+import { sendToTelegram } from "../tg";
 import { maskEmail } from "../auth";
 import { z } from "zod";
 
