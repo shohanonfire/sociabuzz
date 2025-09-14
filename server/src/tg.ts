@@ -1,4 +1,4 @@
-// server/src/tg.ts
+// src/tg.ts
 export async function sendToTelegram(apiUrl: string, payload: unknown) {
   try {
     const res = await fetch(apiUrl, {
