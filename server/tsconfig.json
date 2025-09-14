@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",           // ← CJS
+    "moduleResolution": "Node",     // ← Node resolver
+    "outDir": "dist",
+    "rootDir": "src",
     "esModuleInterop": true,
-    "strict": true,
     "skipLibCheck": true,
-    "outDir": "dist"
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "express"],
+    "noImplicitAny": false          // ← ঝামেলা কমাতে; চাইলে পরে true করে টাইপ দেবে
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
